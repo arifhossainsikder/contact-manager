@@ -18,9 +18,9 @@ class ContactsController extends Controller
     public function index(Request $request)
     {
     	if ($group_id = ($request->get('group_id'))){
-		    $contacts = Contact::where('group_id',$group_id)->paginate($this->limit);
+		    $contacts = Contact::orderby('id','desc')->where('group_id',$group_id)->paginate($this->limit);
 	    } else{
-		    $contacts = Contact::paginate($this->limit);
+		    $contacts = Contact::orderby('id','desc')->paginate($this->limit);
 	    }
         return view('contacts.index',compact('contacts'));
     }
@@ -43,7 +43,17 @@ class ContactsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+             'name' => ['required','min:1'],
+             'company' => ['required'],
+             'email' => ['required','email'],
+        ];
+
+        $this->validate($request,$rules);
+
+        Contact::create($request->all());
+
+        return redirect('contacts')->with('message','Contact saved!');
     }
 
     /**

@@ -31,32 +31,43 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a href="#" class="btn btn-success">Add new contact</a>
+                    <a href="{{ route('contacts.create') }}" class="btn btn-success">Add new contact</a>
 
                 </li>
             </ul>
         </div>
     </div>
 </nav>
-
+<br>
 <!-- Page Content -->
 <div class="container">
 
     <div class="row">
 
         <div class="col-lg-3">
-            <?php $selected_group = Request::get('group_id') ?>
+			<?php $selected_group = Request::get( 'group_id' ) ?>
             <div class="list-group">
-                <a href="{{ route('contacts.index') }}" class="list-group-item {{ empty($selected_group) ? 'active' : '' }}">All contacts ({{ App\Contact::count() }})</a>
-            @foreach(App\Group::all() as $group)
-                    <a href="{{ route('contacts.index',['group_id' => $group->id]) }}" class="list-group-item {{ $selected_group == $group->id ? 'active' : '' }}">{{ $group->name }} ({{ $group->contacts()->count() }})</a>
+                <a href="{{ route('contacts.index') }}"
+                   class="list-group-item {{ empty($selected_group) ? 'active' : '' }}">All contacts
+                    ({{ App\Contact::count() }})</a>
+                @foreach(App\Group::all() as $group)
+                    <a href="{{ route('contacts.index',['group_id' => $group->id]) }}"
+                       class="list-group-item {{ $selected_group == $group->id ? 'active' : '' }}">{{ $group->name }}
+                        ({{ $group->contacts()->count() }})</a>
                 @endforeach
             </div>
         </div>
         <!-- /.col-lg-3 -->
 
-    @yield('content')
-    <!-- /.col-lg-9 -->
+        <div class="col-lg-9">
+            @if(session('message'))
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
+            @endif
+            @yield('content')
+        </div>
+        <!-- /.col-lg-9 -->
 
     </div>
 
