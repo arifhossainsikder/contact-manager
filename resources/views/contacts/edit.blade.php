@@ -10,8 +10,8 @@
             </ul>
         </div>
     @endif
-    {!! Form::open(['route' => 'contacts.store']) !!}
-    @include('contacts.form')
+    {!! Form::model($contact,['route' => ['contacts.update',$contact->id], 'method' => 'PATCH']) !!}
+      @include('contacts.form')
     {!! Form::close() !!}
     <br>
 @endsection

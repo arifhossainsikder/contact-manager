@@ -12,7 +12,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="/css/jquery-ui.min.css">
     <!-- Custom styles for this template -->
     <link href="/css/custom.css" rel="stylesheet">
 
@@ -29,6 +29,16 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
+            <form action="{{ route('contacts.index') }}" class="navbar-form navbar-right">
+                <div class="input-group">
+                    <input type="text" name="term" value="{{ Request::get('term') }}" class="form-control" placeholder="Search...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <i class="glyphicon glyphicon-search">Search</i>
+                        </button>
+                    </span>
+                </div>
+            </form>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <a href="{{ route('contacts.create') }}" class="btn btn-success">Add new contact</a>
@@ -85,6 +95,20 @@
 <!-- Bootstrap core JavaScript -->
 <script src="/js/jquery.min.js"></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script>
+    $(function () {
+        $("input[name=term]").autocomplete({
+            source: "{{ route("contacts.autocomplete") }}",
+            minLength: 3,
+            select: function(event, ui){
+                $(this).val(ui.item.value);
+            }
+        })
+    })
+</script>
+
+@yield('scripts')
 
 </body>
 
