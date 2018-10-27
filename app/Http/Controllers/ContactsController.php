@@ -27,7 +27,12 @@ class ContactsController extends Controller {
 //		    $contacts = Contact::orderby('id','desc')->paginate($this->limit);
 //	    }
 
+//		\DB::enableQueryLog();
+//		listGroups($request->user()->id);
+//		dd(\DB::getQueryLog());
+
 		$contacts = Contact::where( function ( $query ) use ( $request ) {
+			$query->where('user_id',$request->user()->id);
 			if ( $group_id = ( $request->get( 'group_id' ) ) ) {
 				$query->where( 'group_id', $group_id );
 			}
@@ -80,7 +85,8 @@ class ContactsController extends Controller {
 
 		$this->validate( $request, $this->rules );
 
-		Contact::create( $request->all() );
+
+		$request->user()->contacts()->create( $request->all() );
 
 		return redirect( 'contacts' )->with( 'message', 'Contact saved!' );
 	}
@@ -106,6 +112,8 @@ class ContactsController extends Controller {
 	public function edit( $id ) {
 		$contact = Contact::findOrFail( $id );
 
+		$this->authorize('modify',$contact);
+
 		return view( 'contacts.edit', compact( 'contact' ) );
 	}
 
@@ -118,9 +126,12 @@ class ContactsController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function update( Request $request, $id ) {
+
 		$this->validate( $request, $this->rules );
 
 		$contact = Contact::findOrFail( $id );
+
+		$this->authorize('modify',$contact);
 
 		$contact->update( $request->all() );
 

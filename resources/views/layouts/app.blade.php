@@ -31,7 +31,8 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <form action="{{ route('contacts.index') }}" class="navbar-form navbar-right">
                 <div class="input-group">
-                    <input type="text" name="term" value="{{ Request::get('term') }}" class="form-control" placeholder="Search...">
+                    <input type="text" name="term" value="{{ Request::get('term') }}" class="form-control"
+                           placeholder="Search...">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">
                             <i class="glyphicon glyphicon-search">Search</i>
@@ -39,6 +40,35 @@
                     </span>
                 </div>
             </form>
+
+            <ul class="nav navbar-nav navbar-left">
+                <!-- Authentication Links -->
+                @if (Auth::guest())
+                    <li><a href="{{ route('login') }}">Login</a></li>
+                    <li><a href="{{ route('register') }}">Register</a></li>
+                @else
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            {{ Auth::user()->name }} <span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                      style="display: none;">
+                                    {{ csrf_field() }}
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+            </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <a href="{{ route('contacts.create') }}" class="btn btn-success">Add new contact</a>
@@ -53,21 +83,24 @@
 <div class="container">
 
     <div class="row">
-
-        <div class="col-lg-3">
-			<?php $selected_group = Request::get( 'group_id' ) ?>
-            <div class="list-group">
-                <a href="{{ route('contacts.index') }}"
-                   class="list-group-item {{ empty($selected_group) ? 'active' : '' }}">All contacts
-                    ({{ App\Contact::count() }})</a>
-                @foreach(App\Group::all() as $group)
-                    <a href="{{ route('contacts.index',['group_id' => $group->id]) }}"
-                       class="list-group-item {{ $selected_group == $group->id ? 'active' : '' }}">{{ $group->name }}
-                        ({{ $group->contacts()->count() }})</a>
-                @endforeach
+        @if (Auth::check())
+            <div class="col-lg-3">
+				<?php $selected_group = Request::get( 'group_id' );
+				$listGroups = listGroups( Auth::user()->id );
+				?>
+                <div class="list-group">
+                    <a href="{{ route('contacts.index') }}"
+                       class="list-group-item {{ empty($selected_group) ? 'active' : '' }}">All contacts
+                        ({{ collect($listGroups)->sum('total') }})</a>
+                    @foreach($listGroups as $group)
+                        <a href="{{ route('contacts.index',['group_id' => $group->id]) }}"
+                           class="list-group-item {{ $selected_group == $group->id ? 'active' : '' }}">{{ $group->name }}
+                            ({{ $group->total }})</a>
+                    @endforeach
+                </div>
             </div>
-        </div>
-        <!-- /.col-lg-3 -->
+    @endif
+    <!-- /.col-lg-3 -->
 
         <div class="col-lg-9">
             @if(session('message'))
@@ -101,7 +134,7 @@
         $("input[name=term]").autocomplete({
             source: "{{ route("contacts.autocomplete") }}",
             minLength: 3,
-            select: function(event, ui){
+            select: function (event, ui) {
                 $(this).val(ui.item.value);
             }
         })

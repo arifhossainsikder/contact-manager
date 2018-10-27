@@ -18,3 +18,11 @@ Route::get('/', function () {
 Route::get('contacts/autocomplete', ['uses' => 'ContactsController@autocomplete', 'as'=> 'contacts.autocomplete']);
 Route::post('groups/store', ['uses' => 'GroupsController@store', 'as'=> 'groups.store']);
 Route::resource('contacts','ContactsController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

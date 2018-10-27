@@ -12,10 +12,15 @@ class Contact extends Model
 		'phone',
 		'company',
 		'group_id',
+		'user_id',
 		'address',
 	];
 
     public function group(){
     	return $this->belongsTo('App\Group');
+    }
+
+    public function user(){
+    	return $this->belongsTo('App\User');
     }
 }
